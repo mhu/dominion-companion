@@ -1,131 +1,75 @@
 import { useState } from "preact/hooks";
 import "./app.css";
 
-interface PlayerState {
-  numActions: number;
-  numCoins: number;
-  numBuys: number;
-}
-
-interface PlayerPanelProps {
-  playerState: PlayerState;
-  setPlayerState: SetPlayerState;
-}
-
-type SetPlayerState = (
-  stateUpdater: (prevState: PlayerState) => PlayerState
-) => void;
-
 export function App() {
   return <PlayerContainer />;
 }
 
 function PlayerContainer() {
-  const [players, setPlayers] = useState<PlayerState[]>([
-    { numActions: 1, numCoins: 0, numBuys: 1 },
-  ]);
+  const [actions, setActions] = useState(1);
+  const [coins, setCoins] = useState(0);
+  const [buys, setBuys] = useState(1);
 
-  const updatePlayerState = (
-    index: number,
-    stateUpdater: (prevState: PlayerState) => PlayerState
-  ) => {
-    setPlayers((prevPlayers) => {
-      const newPlayers = [...prevPlayers];
-      newPlayers[index] = stateUpdater(prevPlayers[index]);
-      return newPlayers;
-    });
-  };
-
-  return (
-    <>
-      {players.map((player, index) => (
-        <PlayerPanel
-          key={index}
-          playerState={player}
-          setPlayerState={(updater) => updatePlayerState(index, updater)}
-        />
-      ))}
-    </>
-  );
-}
-
-function PlayerPanel({ playerState, setPlayerState }: PlayerPanelProps) {
-  function updatePlayerState(
-    stateUpdater: (prevState: PlayerState) => PlayerState
-  ) {
-    setPlayerState((prevState) => stateUpdater(prevState));
+  function incrementActions() {
+    setActions(actions + 1);
   }
 
-  function incrementAttribute(attr: keyof PlayerState) {
-    updatePlayerState((prevState) => ({
-      ...prevState,
-      [attr]: prevState[attr] + 1,
-    }));
+  function decrementActions() {
+    setActions(Math.max(actions - 1, 0));
   }
 
-  function decrementAttribute(attr: keyof PlayerState) {
-    updatePlayerState((prevState) => ({
-      ...prevState,
-      [attr]: Math.max(prevState[attr] - 1, 0),
-    }));
+  function incrementCoins() {
+    setCoins(coins + 1);
+  }
+
+  function decrementCoins() {
+    setCoins(Math.max(coins - 1, 0));
+  }
+
+  function incrementBuys() {
+    setBuys(buys + 1);
+  }
+
+  function decrementBuys() {
+    setBuys(Math.max(buys - 1, 0));
   }
 
   function endTurn() {
-    updatePlayerState(() => ({
-      numActions: 1,
-      numCoins: 0,
-      numBuys: 1,
-    }));
+    setActions(1);
+    setCoins(0);
+    setBuys(1);
   }
 
   return (
-    <div className={"player-panel"}>
-      <div className={"attribute-button"}>
-        <button
-          className={"button-top-gradient"}
-          onClick={() => incrementAttribute("numActions")}
-        >
+    <div className={"player-container"}>
+      <div className={"stat-container"}>
+        <button onClick={incrementActions} className={"button-top-gradient"}>
           +
         </button>
-        <span>Actions: {playerState.numActions}</span>
-        <button
-          className={"button-bottom-gradient"}
-          onClick={() => decrementAttribute("numActions")}
-        >
+        <span>Actions: {actions}</span>
+        <button onClick={decrementActions} className={"button-bottom-gradient"}>
           -
         </button>
       </div>
-      <div className={"attribute-button"}>
-        <button
-          className={"button-top-gradient"}
-          onClick={() => incrementAttribute("numCoins")}
-        >
+      <div className={"stat-container"}>
+        <button onClick={incrementCoins} className={"button-top-gradient"}>
           +
         </button>
-        <span>Coins: {playerState.numCoins}</span>
-        <button
-          className={"button-bottom-gradient"}
-          onClick={() => decrementAttribute("numCoins")}
-        >
+        <span>Coins: {coins}</span>
+        <button onClick={decrementCoins} className={"button-bottom-gradient"}>
           -
         </button>
       </div>
-      <div className={"attribute-button"}>
-        <button
-          className={"button-top-gradient"}
-          onClick={() => incrementAttribute("numBuys")}
-        >
+      <div className={"stat-container"}>
+        <button onClick={incrementBuys} className={"button-top-gradient"}>
           +
         </button>
-        <span>Buys: {playerState.numBuys}</span>
-        <button
-          className={"button-bottom-gradient"}
-          onClick={() => decrementAttribute("numBuys")}
-        >
+        <span>Buys: {buys}</span>
+        <button onClick={decrementBuys} className={"button-bottom-gradient"}>
           -
         </button>
       </div>
-      <button className={"end-turn-button"} onClick={endTurn}>
+      <button onClick={endTurn} className={"end-turn-button"}>
         End Turn
       </button>
     </div>
